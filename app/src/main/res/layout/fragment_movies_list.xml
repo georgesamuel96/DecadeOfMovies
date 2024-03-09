@@ -10,11 +10,23 @@
         android:id="@+id/et_search"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="4dp"
         android:hint="@string/search_on_movie"
         android:textColorHint="@color/colorHint"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_clear"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/btn_clear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:backgroundTint="@color/white"
+        android:src="@drawable/baseline_clear_24"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -25,7 +37,7 @@
         android:orientation="vertical"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/et_search"
+        app:layout_constraintEnd_toEndOf="@id/btn_clear"
         app:layout_constraintStart_toStartOf="@id/et_search"
         app:layout_constraintTop_toBottomOf="@id/et_search"
         tools:listitem="@layout/item_movie" />
@@ -34,7 +46,7 @@
         android:id="@+id/group_movies_list"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="et_search, rv_movie"
+        app:constraint_referenced_ids="et_search, rv_movie, btn_clear"
         tools:visibility="visible" />
 
     <TextView
@@ -57,11 +69,11 @@
         android:layout_height="0dp"
         android:background="@color/colorWhite"
         android:orientation="vertical"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:visibility="gone">
+        app:layout_constraintTop_toTopOf="parent">
 
         <ProgressBar
             android:layout_width="wrap_content"

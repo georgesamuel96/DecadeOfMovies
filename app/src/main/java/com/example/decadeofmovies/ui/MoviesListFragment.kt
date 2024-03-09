@@ -1,13 +1,17 @@
 package com.example.decadeofmovies.ui
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import com.example.decadeofmovies.R
 import com.example.decadeofmovies.databinding.FragmentMoviesListBinding
 import com.example.decadeofmovies.model.Movie
+import com.example.decadeofmovies.network.EmptyMovieListStatus
 import com.example.decadeofmovies.network.Status
 import com.example.decadeofmovies.viewmodel.MovieViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,6 +43,7 @@ class MoviesListFragment : Fragment(), MovieAdapter.MovieListClickListener {
 
         initialization()
         initializeViewModelObservers()
+        listeners()
 
         return binding.root
     }
@@ -64,12 +69,21 @@ class MoviesListFragment : Fragment(), MovieAdapter.MovieListClickListener {
     private fun getEmptyMoviesListObserver() {
         movieViewModel.emptyMoviesListLiveData.observe(viewLifecycleOwner) {
             binding.apply {
-                if(it) {
-                    tvEmptyList.visibility = View.VISIBLE
-                    groupMoviesList.visibility = View.GONE
-                } else {
-                    tvEmptyList.visibility = View.GONE
-                    groupMoviesList.visibility = View.VISIBLE
+                when(it) {
+                    EmptyMovieListStatus.REQUEST -> {
+                        tvEmptyList.text = getString(R.string.empty_movies_list_message)
+                        tvEmptyList.visibility = View.VISIBLE
+                        groupMoviesList.visibility = View.GONE
+                    }
+                    EmptyMovieListStatus.SEARCH -> {
+                        tvEmptyList.text = getString(R.string.empty_search_movies_list_message)
+                        tvEmptyList.visibility = View.VISIBLE
+                        groupMoviesList.visibility = View.VISIBLE
+                    }
+                    EmptyMovieListStatus.NONE -> {
+                        tvEmptyList.visibility = View.GONE
+                        groupMoviesList.visibility = View.VISIBLE
+                    }
                 }
             }
         }
@@ -85,6 +99,34 @@ class MoviesListFragment : Fragment(), MovieAdapter.MovieListClickListener {
 
                 }
             }
+        }
+    }
+
+    private fun listeners() {
+        binding.apply {
+
+            btnClear.setOnClickListener {
+                etSearch.setText("")
+            }
+
+            etSearch.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                }
+
+                override fun afterTextChanged(s: Editable?) {
+                    val text: String = s?.toString()?: ""
+                    movieViewModel.searchOnMovie(text.lowercase())
+                }
+
+            })
         }
     }
 
