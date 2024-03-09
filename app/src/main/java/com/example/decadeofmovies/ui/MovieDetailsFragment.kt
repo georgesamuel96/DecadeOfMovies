@@ -62,6 +62,19 @@ class MovieDetailsFragment : Fragment() {
                 if(movie.rating == null) "" else getString(R.string.rating,"${movie.rating}" )
             tvYear.text =
                 if(movie.year == null) "" else getString(R.string.year,"${movie.year}" )
+
+            if(movie.cast.isNullOrEmpty()) {
+                groupCastMembers.visibility = View.GONE
+            } else {
+                View.VISIBLE
+            }
+
+            if(movie.genres.isNullOrEmpty()) {
+                groupGenres.visibility = View.VISIBLE
+            } else {
+                groupGenres.visibility = View.GONE
+            }
+
             membersAdapter.updateList(movie.cast?: listOf())
             genresAdapter.updateList(movie.genres?: listOf())
         }
