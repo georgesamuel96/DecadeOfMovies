@@ -1,6 +1,8 @@
 package com.example.decadeofmovies.repo
 
+import com.example.decadeofmovies.model.FlickrSearchPhotoResponse
 import com.example.decadeofmovies.model.Movie
+import retrofit2.Response
 
 class FakeMovieRepo: MovieRepo {
 
@@ -43,5 +45,9 @@ class FakeMovieRepo: MovieRepo {
 
     override suspend fun getMoviesList(): List<Movie> {
         return moviesList
+    }
+
+    override suspend fun getSearchPhotos(title: String): Response<FlickrSearchPhotoResponse>? {
+        return null
     }
 }

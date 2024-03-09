@@ -5,10 +5,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import com.example.decadeofmovies.R
 import com.example.decadeofmovies.databinding.FragmentMovieDetailsBinding
 import com.example.decadeofmovies.model.Movie
+import com.example.decadeofmovies.network.Status
 import com.example.decadeofmovies.ui.adapter.MemberAdapter
 import com.example.decadeofmovies.viewmodel.MovieViewModel
 
@@ -46,6 +48,20 @@ class MovieDetailsFragment : Fragment() {
 
     private fun initializeViewModelObservers() {
         getOpeningMovieObserver()
+        getMoviePhotosObserver()
+    }
+
+    private fun getMoviePhotosObserver() {
+        movieViewModel.moviePhotosLiveData.observe(viewLifecycleOwner) {
+            when(it.status) {
+                Status.SUCCESS -> {
+                    Toast.makeText(requireContext(), "${it.data?.size}", Toast.LENGTH_SHORT).show()
+                }
+                Status.ERROR -> {
+
+                }
+            }
+        }
     }
 
     private fun getOpeningMovieObserver() {
@@ -57,26 +73,29 @@ class MovieDetailsFragment : Fragment() {
 
     private fun setMovieDetails() {
         binding.apply {
-            tvTitle.text = movie.title?: ""
+            tvTitle.text = movie.title ?: ""
             tvRating.text =
-                if(movie.rating == null) "" else getString(R.string.rating,"${movie.rating}" )
+                if (movie.rating == null) "" else getString(R.string.rating, "${movie.rating}")
             tvYear.text =
-                if(movie.year == null) "" else getString(R.string.year,"${movie.year}" )
+                if (movie.year == null) "" else getString(R.string.year, "${movie.year}")
 
-            if(movie.cast.isNullOrEmpty()) {
+            if (movie.cast.isNullOrEmpty()) {
                 groupCastMembers.visibility = View.GONE
             } else {
                 View.VISIBLE
             }
 
-            if(movie.genres.isNullOrEmpty()) {
+            if (movie.genres.isNullOrEmpty()) {
                 groupGenres.visibility = View.VISIBLE
             } else {
                 groupGenres.visibility = View.GONE
             }
 
-            membersAdapter.updateList(movie.cast?: listOf())
-            genresAdapter.updateList(movie.genres?: listOf())
+            membersAdapter.updateList(movie.cast ?: listOf())
+            genresAdapter.updateList(movie.genres ?: listOf())
+            movie.title?.let {
+                movieViewModel.getPhotos(it)
+            }
         }
     }
 

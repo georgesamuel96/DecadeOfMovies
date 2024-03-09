@@ -1,17 +1,21 @@
 package com.example.decadeofmovies.repo
 
 import android.content.Context
+import com.example.decadeofmovies.model.FlickrSearchPhotoResponse
 import com.example.decadeofmovies.model.Movie
+import com.example.decadeofmovies.network.APIService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import retrofit2.Response
 import java.io.IOException
 import java.io.InputStream
 
 class MovieRepoImpl(
-    private val context: Context
+    private val context: Context,
+    private val apiService: APIService
 ) : MovieRepo {
     override suspend fun getMoviesList(): List<Movie>? {
         try {
@@ -70,5 +74,15 @@ class MovieRepoImpl(
             return null
         }
         return json
+    }
+
+    override suspend fun getSearchPhotos(title: String): Response<FlickrSearchPhotoResponse>? {
+        return apiService.searchFlickrPhotos(
+            "flickr.photos.search",
+            "47a6658cb4d2de59f073d0c89af91c59",
+            "json",
+            title,
+            "1"
+        )
     }
 }

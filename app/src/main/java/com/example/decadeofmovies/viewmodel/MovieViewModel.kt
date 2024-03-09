@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.decadeofmovies.model.FlickrPhoto
 import com.example.decadeofmovies.model.Movie
 import com.example.decadeofmovies.network.EmptyMovieListStatus
 import com.example.decadeofmovies.network.Resource
@@ -31,6 +32,9 @@ class MovieViewModel @Inject constructor(
 
     private val openMovieData = MutableLiveData<Movie>()
     val openMovieLiveData: LiveData<Movie> = openMovieData
+
+    private val moviePhotos = MutableLiveData<Resource<List<FlickrPhoto>>>()
+    val moviePhotosLiveData: LiveData<Resource<List<FlickrPhoto>>> = moviePhotos
 
     private var jobSearch: Job? = null
     private val moviesListSearchIndex = Array(2025) { IntArray(6) { 0 } }
@@ -92,7 +96,7 @@ class MovieViewModel @Inject constructor(
             }
 
             for (yearIndex in 0 until 2025) {
-                for (movieIndex in 1 .. moviesListSearchIndex[yearIndex][0]) {
+                for (movieIndex in 1..moviesListSearchIndex[yearIndex][0]) {
                     checkAddYearHeader(newFilteredMovieList, yearIndex)
                     newFilteredMovieList.add(sortedList[moviesListSearchIndex[yearIndex][movieIndex]])
                 }
@@ -103,8 +107,8 @@ class MovieViewModel @Inject constructor(
     }
 
     private fun checkAddYearHeader(newFilteredMovieList: MutableList<Movie>, year: Int) {
-        if(newFilteredMovieList.isEmpty().not()) {
-            if(newFilteredMovieList.last().year != year) {
+        if (newFilteredMovieList.isEmpty().not()) {
+            if (newFilteredMovieList.last().year != year) {
                 newFilteredMovieList.add(Movie(year = year, rating = -1))
             }
         } else {
@@ -114,7 +118,7 @@ class MovieViewModel @Inject constructor(
 
     private fun setMoviesListData(newFilteredMovieList: List<Movie>) {
         emptyMoviesList.postValue(
-            if(newFilteredMovieList.isEmpty()) EmptyMovieListStatus.SEARCH else EmptyMovieListStatus.NONE
+            if (newFilteredMovieList.isEmpty()) EmptyMovieListStatus.SEARCH else EmptyMovieListStatus.NONE
         )
 
         moviesListResponse.postValue(Resource.success(newFilteredMovieList))
@@ -122,12 +126,32 @@ class MovieViewModel @Inject constructor(
 
     //Reset the indexes of the top rated movies
     private fun resetMoviesListSearchIndex() {
-        for (index in 0 until  2025) {
+        for (index in 0 until 2025) {
             moviesListSearchIndex[index][0] = 0
         }
     }
 
     fun openMovieLiveData(movie: Movie) {
         openMovieData.value = movie
+    }
+
+    fun getPhotos(title: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            startLoading.postValue(true)
+
+            val response = movieRepo.getSearchPhotos(title)
+            if(response?.isSuccessful == true) {
+                val photos = response.body()?.photos?.photo
+                if(photos.isNullOrEmpty()) {
+
+                } else {
+                    moviePhotos.postValue(Resource.success(photos))
+                }
+            } else {
+
+            }
+
+            startLoading.postValue(false)
+        }
     }
 }
