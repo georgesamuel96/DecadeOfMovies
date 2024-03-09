@@ -5,13 +5,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import com.example.decadeofmovies.R
 import com.example.decadeofmovies.databinding.FragmentMovieDetailsBinding
 import com.example.decadeofmovies.model.Movie
 import com.example.decadeofmovies.network.Status
 import com.example.decadeofmovies.ui.adapter.MemberAdapter
+import com.example.decadeofmovies.ui.adapter.PhotoAdapter
 import com.example.decadeofmovies.viewmodel.MovieViewModel
 
 class MovieDetailsFragment : Fragment() {
@@ -27,6 +27,9 @@ class MovieDetailsFragment : Fragment() {
     }
     private val genresAdapter: MemberAdapter by lazy {
         MemberAdapter(mutableListOf())
+    }
+    private val photoAdapter: PhotoAdapter by lazy {
+        PhotoAdapter(mutableListOf())
     }
 
     override fun onCreateView(
@@ -49,16 +52,33 @@ class MovieDetailsFragment : Fragment() {
     private fun initializeViewModelObservers() {
         getOpeningMovieObserver()
         getMoviePhotosObserver()
+        getLoadingObserver()
+        getEmptyPhotosObserver()
+    }
+
+    private fun getEmptyPhotosObserver() {
+        movieViewModel.emptyMoviePhotosLiveData.observe(viewLifecycleOwner) {
+            binding.tvEmptyPhotos.visibility = if (it) View.VISIBLE else View.GONE
+        }
+    }
+
+    private fun getLoadingObserver() {
+        movieViewModel.loadingLiveData.observe(viewLifecycleOwner) {
+            binding.layoutLoading.root.visibility = if (it) View.VISIBLE else View.GONE
+        }
     }
 
     private fun getMoviePhotosObserver() {
         movieViewModel.moviePhotosLiveData.observe(viewLifecycleOwner) {
-            when(it.status) {
+            when (it.status) {
                 Status.SUCCESS -> {
-                    Toast.makeText(requireContext(), "${it.data?.size}", Toast.LENGTH_SHORT).show()
+                    photoAdapter.updateList(it.data!!)
+                    binding.groupPhotos.visibility = View.VISIBLE
                 }
-                Status.ERROR -> {
 
+                Status.ERROR -> {
+                    binding.groupPhotos.visibility = View.GONE
+                    binding.tvEmptyPhotos.visibility = View.GONE
                 }
             }
         }
@@ -82,13 +102,13 @@ class MovieDetailsFragment : Fragment() {
             if (movie.cast.isNullOrEmpty()) {
                 groupCastMembers.visibility = View.GONE
             } else {
-                View.VISIBLE
+                groupCastMembers.visibility = View.VISIBLE
             }
 
             if (movie.genres.isNullOrEmpty()) {
-                groupGenres.visibility = View.VISIBLE
-            } else {
                 groupGenres.visibility = View.GONE
+            } else {
+                groupGenres.visibility = View.VISIBLE
             }
 
             membersAdapter.updateList(movie.cast ?: listOf())
@@ -106,6 +126,9 @@ class MovieDetailsFragment : Fragment() {
 
             rvGenres.isNestedScrollingEnabled = false
             rvGenres.adapter = genresAdapter
+
+            rvPhotos.isNestedScrollingEnabled = false
+            rvPhotos.adapter = photoAdapter
         }
     }
 

@@ -7,4 +7,6 @@
     <string name="empty_search_movies_list_message">There are not movies with this title!</string>
     <string name="cast_members">Cast Members:</string>
     <string name="genres">Genres:</string>
+    <string name="photos">Photos:</string>
+    <string name="empty_photos_for_film_message">There are not any photos for this film!</string>
 </resources>

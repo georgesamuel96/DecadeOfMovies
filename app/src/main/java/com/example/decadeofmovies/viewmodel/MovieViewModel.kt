@@ -36,6 +36,9 @@ class MovieViewModel @Inject constructor(
     private val moviePhotos = MutableLiveData<Resource<List<FlickrPhoto>>>()
     val moviePhotosLiveData: LiveData<Resource<List<FlickrPhoto>>> = moviePhotos
 
+    private val emptyMoviePhotos = MutableLiveData<Boolean>()
+    val emptyMoviePhotosLiveData: LiveData<Boolean> = emptyMoviePhotos
+
     private var jobSearch: Job? = null
     private val moviesListSearchIndex = Array(2025) { IntArray(6) { 0 } }
 
@@ -143,12 +146,13 @@ class MovieViewModel @Inject constructor(
             if(response?.isSuccessful == true) {
                 val photos = response.body()?.photos?.photo
                 if(photos.isNullOrEmpty()) {
-
+                    emptyMoviePhotos.postValue(true)
                 } else {
+                    emptyMoviePhotos.postValue(false)
                     moviePhotos.postValue(Resource.success(photos))
                 }
             } else {
-
+                moviePhotos.postValue(Resource.error(""))
             }
 
             startLoading.postValue(false)

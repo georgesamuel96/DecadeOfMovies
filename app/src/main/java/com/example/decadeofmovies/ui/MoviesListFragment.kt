@@ -65,7 +65,7 @@ class MoviesListFragment : Fragment(), MovieAdapter.MovieListClickListener {
 
     private fun getLoadingObserver() {
         movieViewModel.loadingLiveData.observe(viewLifecycleOwner) {
-            binding.constraintLoading.visibility = if(it) View.VISIBLE else View.GONE
+            binding.layoutLoading.root.visibility = if(it) View.VISIBLE else View.GONE
         }
     }
 
