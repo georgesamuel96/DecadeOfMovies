@@ -4,5 +4,5 @@ import com.example.decadeofmovies.model.Movie
 
 interface MovieRepo {
 
-    fun getMoviesList(): List<Movie>?
+    suspend fun getMoviesList(): List<Movie>?
 }
