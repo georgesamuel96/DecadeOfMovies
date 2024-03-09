@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
 import com.example.decadeofmovies.R
 import com.example.decadeofmovies.databinding.FragmentMoviesListBinding
@@ -27,8 +26,9 @@ class MoviesListFragment : Fragment(), MovieAdapter.MovieListClickListener {
 
     private val binding get() = _binding!!
     private val moviesList = mutableListOf<Movie>()
+    private val filteredMoviesList = mutableListOf<Movie>()
     private val movieAdapter: MovieAdapter by lazy {
-        MovieAdapter(moviesList, this)
+        MovieAdapter(filteredMoviesList, this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -96,6 +96,13 @@ class MoviesListFragment : Fragment(), MovieAdapter.MovieListClickListener {
         movieViewModel.movieListLiveData.observe(viewLifecycleOwner) {
             when(it.status) {
                 Status.SUCCESS -> {
+
+                    //movies list used when user clear search, use the default list to view
+                    //if the movies empty, that means is first time opened this view, and should save the default list
+                    if(moviesList.isEmpty()) {
+                        moviesList.addAll(it.data!!)
+                    }
+
                     movieAdapter.setMoviesList(it.data!!)
                 }
                 Status.ERROR -> {
@@ -126,7 +133,7 @@ class MoviesListFragment : Fragment(), MovieAdapter.MovieListClickListener {
 
                 override fun afterTextChanged(s: Editable?) {
                     val text: String = s?.toString()?: ""
-                    movieViewModel.searchOnMovie(text.lowercase())
+                    movieViewModel.searchOnMovie(text.lowercase(), moviesList)
                 }
 
             })

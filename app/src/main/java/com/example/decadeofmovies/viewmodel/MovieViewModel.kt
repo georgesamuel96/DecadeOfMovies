@@ -34,7 +34,6 @@ class MovieViewModel @Inject constructor(
 
     private var jobSearch: Job? = null
     private val moviesListSearchIndex = Array(2025) { IntArray(6) { 0 } }
-    private val moviesList = mutableListOf<Movie>()
 
     fun getMoviesList() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -42,9 +41,6 @@ class MovieViewModel @Inject constructor(
 
             withContext(Dispatchers.Main) {
                 val list = movieRepo.getMoviesList()
-
-                //using this list when user clear search, push the regular list to the view
-                moviesList.addAll(list ?: listOf())
 
                 if (list.isNullOrEmpty()) {
                     emptyMoviesList.value = EmptyMovieListStatus.REQUEST
@@ -64,7 +60,7 @@ class MovieViewModel @Inject constructor(
      * I am using job coroutines to cancel the job (cancel the previous search)
      * when the user write new character to search
      */
-    fun searchOnMovie(text: String) {
+    fun searchOnMovie(text: String, moviesList: List<Movie>) {
         jobSearch?.cancel()
 
         if (text.isEmpty()) {
@@ -102,9 +98,7 @@ class MovieViewModel @Inject constructor(
                 }
             }
 
-            withContext(Dispatchers.Main) {
-                setMoviesListData(newFilteredMovieList)
-            }
+            setMoviesListData(newFilteredMovieList)
         }
     }
 
@@ -119,9 +113,11 @@ class MovieViewModel @Inject constructor(
     }
 
     private fun setMoviesListData(newFilteredMovieList: List<Movie>) {
-        emptyMoviesList.value =
+        emptyMoviesList.postValue(
             if(newFilteredMovieList.isEmpty()) EmptyMovieListStatus.SEARCH else EmptyMovieListStatus.NONE
-        moviesListResponse.value = Resource.success(newFilteredMovieList)
+        )
+
+        moviesListResponse.postValue(Resource.success(newFilteredMovieList))
     }
 
     //Reset the indexes of the top rated movies
