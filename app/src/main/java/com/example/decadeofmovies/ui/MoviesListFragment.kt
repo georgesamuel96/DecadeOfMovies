@@ -7,7 +7,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.Navigation
 import com.example.decadeofmovies.R
 import com.example.decadeofmovies.databinding.FragmentMoviesListBinding
 import com.example.decadeofmovies.model.Movie
@@ -21,7 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MoviesListFragment : Fragment(), MovieAdapter.MovieListClickListener {
 
     private var _binding: FragmentMoviesListBinding? = null
-    private val movieViewModel: MovieViewModel by viewModels()
+    private val movieViewModel: MovieViewModel by activityViewModels()
 
     private val binding get() = _binding!!
     private val moviesList = mutableListOf<Movie>()
@@ -132,7 +134,9 @@ class MoviesListFragment : Fragment(), MovieAdapter.MovieListClickListener {
     }
 
     override fun openMovieDetailS(movie: Movie) {
-
+        movieViewModel.openMovieLiveData(movie)
+        Navigation.findNavController(requireView())
+            .navigate(R.id.action_moviesListFragment_to_movieDetailsFragment)
     }
 
     override fun onDestroyView() {

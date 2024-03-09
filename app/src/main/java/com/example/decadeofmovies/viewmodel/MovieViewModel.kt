@@ -1,5 +1,6 @@
 package com.example.decadeofmovies.viewmodel
 
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -28,6 +29,9 @@ class MovieViewModel @Inject constructor(
 
     private val emptyMoviesList = MutableLiveData<EmptyMovieListStatus>()
     val emptyMoviesListLiveData: LiveData<EmptyMovieListStatus> = emptyMoviesList
+
+    private val openMovieData = MutableLiveData<Movie>()
+    val openMovieLiveData: LiveData<Movie> = openMovieData
 
     private var jobSearch: Job? = null
     private val moviesListSearchIndex = Array(2025) { IntArray(6) { 0 } }
@@ -126,5 +130,9 @@ class MovieViewModel @Inject constructor(
         for (index in 0 until  2025) {
             moviesListSearchIndex[index][0] = 0
         }
+    }
+
+    fun openMovieLiveData(movie: Movie) {
+        openMovieData.value = movie
     }
 }

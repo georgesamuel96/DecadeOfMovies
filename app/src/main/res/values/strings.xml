@@ -1,8 +1,10 @@
 <resources>
-    <string name="app_name">DecadeOfMovies</string>
+    <string name="app_name">Decade Of Movies</string>
     <string name="search_on_movie">Search on movie</string>
     <string name="year">Year: %1$s</string>
     <string name="rating">Rating: %1$s</string>
     <string name="empty_movies_list_message">There are not movies right now!</string>
     <string name="empty_search_movies_list_message">There are not movies with this title!</string>
+    <string name="cast_members">Cast Members:</string>
+    <string name="genres">Genres:</string>
 </resources>
