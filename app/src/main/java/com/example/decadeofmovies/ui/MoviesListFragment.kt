@@ -13,6 +13,7 @@ import com.example.decadeofmovies.databinding.FragmentMoviesListBinding
 import com.example.decadeofmovies.model.Movie
 import com.example.decadeofmovies.network.EmptyMovieListStatus
 import com.example.decadeofmovies.network.Status
+import com.example.decadeofmovies.ui.adapter.MovieAdapter
 import com.example.decadeofmovies.viewmodel.MovieViewModel
 import dagger.hilt.android.AndroidEntryPoint
 

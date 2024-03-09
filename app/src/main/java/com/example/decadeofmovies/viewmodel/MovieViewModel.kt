@@ -94,6 +94,7 @@ class MovieViewModel @Inject constructor(
 
             for (yearIndex in 0 until 2025) {
                 for (movieIndex in 1 .. moviesListSearchIndex[yearIndex][0]) {
+                    checkAddYearHeader(newFilteredMovieList, yearIndex)
                     newFilteredMovieList.add(sortedList[moviesListSearchIndex[yearIndex][movieIndex]])
                 }
             }
@@ -101,6 +102,16 @@ class MovieViewModel @Inject constructor(
             withContext(Dispatchers.Main) {
                 setMoviesListData(newFilteredMovieList)
             }
+        }
+    }
+
+    private fun checkAddYearHeader(newFilteredMovieList: MutableList<Movie>, year: Int) {
+        if(newFilteredMovieList.isEmpty().not()) {
+            if(newFilteredMovieList.last().year != year) {
+                newFilteredMovieList.add(Movie(year = year, rating = -1))
+            }
+        } else {
+            newFilteredMovieList.add(Movie(year = year, rating = -1))
         }
     }
 
